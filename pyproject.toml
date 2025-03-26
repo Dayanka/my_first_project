@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "my-first-project"
+version = "0.1.0"
+description = "A simple project setup"
+authors = ["Your Name <your-email@example.com>"]
+
+# Убедитесь, что указали правильный путь
+packages = [
+    { include = "src" }
+]
+
+# Добавьте необходимые зависимости (если они есть)
+[tool.poetry.dependencies]
+python = "^3.12"
+
+[tool.poetry.dev-dependencies]
+ruff = "^0.11.0"
+
