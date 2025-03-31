@@ -1,19 +1,27 @@
-# Используем официальный образ Python
+# Используем официальный Python образ (на 3.12-slim)
 FROM python:3.12-slim
 
-# Устанавливаем рабочую директорию в контейнере
+# Отключаем запись pyc-файлов и буферизацию вывода
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Устанавливаем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем файлы проекта в контейнер
-COPY . /app
+# Копируем файлы с зависимостями в контейнер
+COPY pyproject.toml poetry.lock /app/
 
-# Устанавливаем зависимости из pyproject.toml
-RUN pip install poetry
-RUN poetry install --without dev
+# Устанавливаем Poetry и зависимости
+RUN pip install --upgrade pip && pip install poetry
+# Чтобы использовать системный интерпретатор вместо создания виртуального окружения в контейнере:
+RUN poetry config virtualenvs.create false && poetry install --only main --no-root
 
-# Открываем порт для приложения (если нужно)
+# Копируем оставшийся код проекта
+COPY . /app/
+
+# Открываем порт 8000 (на котором будет работать сервер)
 EXPOSE 8000
 
-# Команда для запуска приложения
-CMD ["poetry", "run", "python", "src/my_project/main.py"]
+# Команда для запуска сервера
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
